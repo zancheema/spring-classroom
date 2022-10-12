@@ -305,7 +305,7 @@ public class ClassroomControllerTest {
     @WithMockUser
     public void updateClassroomWithoutWriteAuthorityShouldReturnForbidden() throws Exception {
         long classroomId = 2;
-        UpdateClassroomPayload payload = new UpdateClassroomPayload(1, "title", "sub");
+        UpdateClassroomPayload payload = new UpdateClassroomPayload(1L, "title", "sub");
         String payloadJson = objectMapper.writeValueAsString(payload);
         mockMvc.perform(
                         patch("/api/classrooms/update/" + classroomId)
@@ -320,7 +320,7 @@ public class ClassroomControllerTest {
     @WithMockUser(authorities = "write")
     public void updatedClassroomFailureShouldReturnBadRequest() throws Exception {
         long classroomId = 2;
-        UpdateClassroomPayload payload = new UpdateClassroomPayload(1, "title", "sub");
+        UpdateClassroomPayload payload = new UpdateClassroomPayload(1L, "title", "sub");
         String payloadJson = objectMapper.writeValueAsString(payload);
         when(classroomService.updateClassroom(classroomId, payload))
                 .thenReturn(Optional.empty());
@@ -338,7 +338,7 @@ public class ClassroomControllerTest {
     @WithMockUser(authorities = "write")
     public void updateClassroomSuccessShouldReturnUpdatedClassroomObject() throws Exception {
         long classroomId = 2;
-        UpdateClassroomPayload payload = new UpdateClassroomPayload(1, "title", "sub");
+        UpdateClassroomPayload payload = new UpdateClassroomPayload(1L, "title", "sub");
         String payloadJson = objectMapper.writeValueAsString(payload);
         Teacher teacher = new Teacher(1, "first", "last");
         ClassroomBody classroomBody = new ClassroomBody(2, teacher, "title", "subject");

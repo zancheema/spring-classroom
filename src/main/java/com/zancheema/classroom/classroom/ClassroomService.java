@@ -5,7 +5,7 @@ import com.zancheema.classroom.classroom.dto.*;
 import java.util.Optional;
 
 public interface ClassroomService {
-    Optional<ClassroomBody> findClassroomById(long anyLong);
+    Optional<ClassroomBody> findClassroomById(long classroomId);
 
     Optional<Teacher> findTeacher(long classroomId);
 

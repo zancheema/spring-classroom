@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateClassroomPayload {
-    private int teacherId;
-    private String title;
-    private String subject;
+    private @NotNull Long teacherId;
+    private @NotNull String title;
+    private @NotNull String subject;
 }
