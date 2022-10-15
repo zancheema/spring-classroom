@@ -36,6 +36,10 @@ public class User implements UserDetails {
     private boolean credentialsNonExpired = true;
 
     private boolean enabled = true;
+    private List<SimpleGrantedAuthority> authorities = List.of(
+            new SimpleGrantedAuthority("read"),
+            new SimpleGrantedAuthority("write")
+    );
 
     public long getId() {
         return id;
@@ -69,12 +73,13 @@ public class User implements UserDetails {
         this.email = email;
     }
 
+    public void setAuthorities(List<SimpleGrantedAuthority> authorities) {
+        this.authorities = authorities;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(
-                new SimpleGrantedAuthority("read"),
-                new SimpleGrantedAuthority("write")
-        );
+        return authorities;
     }
 
     @Override

@@ -16,4 +16,6 @@ public interface ClassroomService {
     Optional<ClassroomStudent> addStudentToClassroom(ClassroomStudent payload);
 
     Optional<ClassroomBody> updateClassroom(long classroomId, UpdateClassroomPayload payload);
+
+    Optional<AttendingClassrooms> findAttendingClassrooms(String username);
 }

@@ -3,6 +3,7 @@ package com.zancheema.classroom.classroom;
 import com.zancheema.classroom.classroom.dto.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -22,6 +23,14 @@ public class ClassroomController {
     public ResponseEntity<ClassroomBody> getClassroom(@PathVariable("classroomId") long classroomId) {
         Optional<ClassroomBody> classroom = classroomService.findClassroomById(classroomId);
         return ResponseEntity.of(classroom);
+    }
+
+    @GetMapping("/attending")
+    @PreAuthorize("hasAuthority(read)")
+    public AttendingClassrooms getAttendingClassrooms(
+            @AuthenticationPrincipal(expression = "username") String username
+    ) {
+        return classroomService.findAttendingClassrooms(username).get();
     }
 
     @GetMapping("/{classroomId}/teacher")

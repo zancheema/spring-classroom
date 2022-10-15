@@ -3,16 +3,24 @@ package com.zancheema.classroom.classroom;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zancheema.classroom.classroom.dto.*;
 import com.zancheema.classroom.config.SecurityConfig;
+import com.zancheema.classroom.user.User;
+import com.zancheema.classroom.user.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -28,10 +36,27 @@ public class ClassroomControllerTest {
     @MockBean
     private ClassroomService classroomService;
 
+    @MockBean
+    private UserRepository userRepository;
+
     @Autowired
     private MockMvc mockMvc;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final String authenticatedUsername = "john@example.com";
+    @Mock
+    private User authenticatedUser;
+
+    @BeforeEach
+    public void setup() {
+        authenticatedUser = new User();
+        authenticatedUser.setEmail(authenticatedUsername);
+        authenticatedUser.setAuthorities(List.of(new SimpleGrantedAuthority("read")));
+
+        when(userRepository.findByEmail(authenticatedUsername))
+                .thenReturn(Optional.of(authenticatedUser));
+    }
 
     @Test
     public void getClassroomWithoutAuthorizationShouldReturnUnauthorized() throws Exception {
@@ -132,7 +157,7 @@ public class ClassroomControllerTest {
     public void getStudentsSuccessShouldReturnStudentList() throws Exception {
         ClassroomStudents classroomStudents = new ClassroomStudents(
                 1,
-                List.of(new Student(1, "first", "last", "user@host.com"))
+                List.of(new Student(1, "first", "last", "authenticatedUser@host.com"))
         );
         when(classroomService.findClassroomStudents(classroomStudents.classroomId()))
                 .thenReturn(Optional.of(classroomStudents));
@@ -141,6 +166,35 @@ public class ClassroomControllerTest {
         mockMvc.perform(get("/api/classrooms/" + classroomStudents.classroomId() + "/students"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(classroomStudentsJson));
+    }
+
+    @Test
+    public void getAttendingClassroomsWithoutAuthenticationShouldReturnUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/classrooms/attending"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser
+    public void getAttendingClassroomsWithoutReadAuthorityShouldReturnForbidden() throws Exception {
+        mockMvc.perform(get("/api/classrooms/attending"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(value = authenticatedUsername, setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    public void getAttendingClassroomsShouldReturnClassroomsAttendedByUserAsStudent() throws Exception {
+        AttendingClassrooms attendingClassrooms = new AttendingClassrooms(1L, Set.of(
+                new ClassroomBody(2L, new Teacher(3L, "first", "last"), "a", "b"),
+                new ClassroomBody(4L, new Teacher(5L, "a", "n"), "x", "z")
+        ));
+        when(classroomService.findAttendingClassrooms(authenticatedUsername))
+                .thenReturn(Optional.of(attendingClassrooms));
+
+        String attendingClassroomsJson = objectMapper.writeValueAsString(attendingClassrooms);
+        mockMvc.perform(get("/api/classrooms/attending"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(attendingClassroomsJson));
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zancheema.classroom.auth.dto.CreatedUser;
 import com.zancheema.classroom.auth.dto.SignupPayload;
 import com.zancheema.classroom.config.SecurityConfig;
+import com.zancheema.classroom.user.UserRepository;
 import com.zancheema.classroom.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
+    // to satisfy dependency requirement of SecurityConfig
+    @MockBean
+    private UserRepository userRepository;
 
     @MockBean
     private UserService userService;

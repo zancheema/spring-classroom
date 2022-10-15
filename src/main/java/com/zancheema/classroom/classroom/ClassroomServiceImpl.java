@@ -85,4 +85,9 @@ public class ClassroomServiceImpl implements ClassroomService {
         ClassroomBody classroomBody = classroomMapper.toClassroomBody(updatedClassroom);
         return Optional.of(classroomBody);
     }
+
+    @Override
+    public Optional<AttendingClassrooms> findAttendingClassrooms(String username) {
+        return Optional.empty();
+    }
 }
