@@ -63,15 +63,15 @@ public class ClassroomServiceTest {
     public void findByIdExistsShouldReturnClassroomObject() {
         when(classroomRepository.findById(1L))
                 .thenReturn(Optional.of(classroomObj));
-        ClassroomBody mockClassroomBody = new ClassroomBody(3L, null, null, null);
+        ClassroomInfo mockClassroomInfo = new ClassroomInfo(3L, null, null, null);
         when(classroomMapper.toClassroomBody(classroomObj))
-                .thenReturn(mockClassroomBody);
+                .thenReturn(mockClassroomInfo);
 
-        Optional<ClassroomBody> optionalClassroomBody = classroomService.findClassroomById(1L);
+        Optional<ClassroomInfo> optionalClassroomBody = classroomService.findClassroomById(1L);
 
         assertThat(optionalClassroomBody).isPresent();
-        ClassroomBody classroomBody = optionalClassroomBody.get();
-        assertThat(classroomBody).isEqualTo(mockClassroomBody);
+        ClassroomInfo classroomInfo = optionalClassroomBody.get();
+        assertThat(classroomInfo).isEqualTo(mockClassroomInfo);
     }
 
     @Test
@@ -88,17 +88,17 @@ public class ClassroomServiceTest {
     public void findTeacherShouldReturnTeacherObject() {
         when(classroomRepository.findById(1L))
                 .thenReturn(Optional.of(classroomObj));
-        ClassroomBody mockClassroomBody = new ClassroomBody(
+        ClassroomInfo mockClassroomInfo = new ClassroomInfo(
                 3L, new Teacher(4L, "first", "last"), null, null
         );
         when(classroomMapper.toClassroomBody(classroomObj))
-                .thenReturn(mockClassroomBody);
+                .thenReturn(mockClassroomInfo);
 
         Optional<Teacher> optionalTeacher = classroomService.findTeacher(1L);
 
         assertThat(optionalTeacher).isPresent();
         Teacher teacher = optionalTeacher.get();
-        assertThat(teacher).isEqualTo(mockClassroomBody.teacher());
+        assertThat(teacher).isEqualTo(mockClassroomInfo.teacher());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class ClassroomServiceTest {
         when(userRepository.findById(2L))
                 .thenReturn(Optional.empty());
 
-        Optional<ClassroomBody> optionalClassroomBody = classroomService
+        Optional<ClassroomInfo> optionalClassroomBody = classroomService
                 .createClassroom(new ClassroomCreationPayload(2L, "t", "s"));
 
         assertThat(optionalClassroomBody).isEmpty();
@@ -150,18 +150,18 @@ public class ClassroomServiceTest {
         savedClassroom.setId(5L);
         when(classroomRepository.save(classroomObj))
                 .thenReturn(savedClassroom);
-        ClassroomBody mockClassroomBody = new ClassroomBody(
+        ClassroomInfo mockClassroomInfo = new ClassroomInfo(
                 3L, new Teacher(4L, "first", "last"), null, null
         );
         when(classroomMapper.toClassroomBody(savedClassroom))
-                .thenReturn(mockClassroomBody);
+                .thenReturn(mockClassroomInfo);
 
 
-        Optional<ClassroomBody> optionalClassroomBody = classroomService
+        Optional<ClassroomInfo> optionalClassroomBody = classroomService
                 .createClassroom(payload);
 
         assertThat(optionalClassroomBody).isPresent();
-        assertThat(optionalClassroomBody).get().isEqualTo(mockClassroomBody);
+        assertThat(optionalClassroomBody).get().isEqualTo(mockClassroomInfo);
     }
 
     @Test
@@ -215,7 +215,7 @@ public class ClassroomServiceTest {
         when(classroomRepository.findById(1L))
                 .thenReturn(Optional.empty());
 
-        Optional<ClassroomBody> optionalClassroomBody = classroomService
+        Optional<ClassroomInfo> optionalClassroomBody = classroomService
                 .updateClassroom(1L, new UpdateClassroomPayload(2L, "title", "sub"));
 
         assertThat(optionalClassroomBody).isEmpty();
@@ -228,7 +228,7 @@ public class ClassroomServiceTest {
         when(userRepository.findById(2L))
                 .thenReturn(Optional.empty());
 
-        Optional<ClassroomBody> optionalClassroomBody = classroomService
+        Optional<ClassroomInfo> optionalClassroomBody = classroomService
                 .updateClassroom(1L, new UpdateClassroomPayload(2L, "title", "sub"));
 
         assertThat(optionalClassroomBody).isEmpty();
@@ -247,17 +247,17 @@ public class ClassroomServiceTest {
         updatedClassroom.setId(5L);
         when(classroomRepository.save(classroomObj))
                 .thenReturn(updatedClassroom);
-        ClassroomBody updatedClassroomBody = new ClassroomBody(6L, null, "", "");
+        ClassroomInfo updatedClassroomInfo = new ClassroomInfo(6L, null, "", "");
         when(classroomMapper.toClassroomBody(updatedClassroom))
-                .thenReturn(updatedClassroomBody);
+                .thenReturn(updatedClassroomInfo);
 
-        Optional<ClassroomBody> optionalClassroomBody = classroomService
+        Optional<ClassroomInfo> optionalClassroomBody = classroomService
                 .updateClassroom(1L, payload);
 
         assertThat(optionalClassroomBody).isPresent();
-        ClassroomBody classroomBody = optionalClassroomBody.get();
+        ClassroomInfo classroomInfo = optionalClassroomBody.get();
         // the returned object is updated object
-        assertThat(classroomBody).isEqualTo(updatedClassroomBody);
+        assertThat(classroomInfo).isEqualTo(updatedClassroomInfo);
         // check behavior: the fields of db object were updated
         assertThat(classroomObj.getTeacher()).isEqualTo(mockTeacher);
         assertThat(classroomObj.getTitle()).isEqualTo(payload.getTitle());

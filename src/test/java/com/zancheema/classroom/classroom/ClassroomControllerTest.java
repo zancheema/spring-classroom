@@ -60,14 +60,14 @@ public class ClassroomControllerTest {
 
     @Test
     public void getClassroomWithoutAuthorizationShouldReturnUnauthorized() throws Exception {
-        mockMvc.perform(get("/api/classrooms/" + 1))
+        mockMvc.perform(get("/api/classrooms/" + 1 + "/info"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser
     public void getClassroomWithoutReadAuthorityShouldReturnForbidden() throws Exception {
-        mockMvc.perform(get("/api/classrooms/" + 1))
+        mockMvc.perform(get("/api/classrooms/" + 1 + "/info"))
                 .andExpect(status().isForbidden());
     }
 
@@ -77,21 +77,21 @@ public class ClassroomControllerTest {
         when(classroomService.findClassroomById(anyLong()))
                 .thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/classrooms/" + 1))
+        mockMvc.perform(get("/api/classrooms/" + 1 + "/info"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @WithMockUser(authorities = "read")
     public void getClassroomWithValidClassroomIdShouldReturnClassroomList() throws Exception {
-        ClassroomBody classroomBody = new ClassroomBody(
+        ClassroomInfo classroomInfo = new ClassroomInfo(
                 1, new Teacher(2, "john", "doe"), "title", "subject"
         );
         when(classroomService.findClassroomById(anyLong()))
-                .thenReturn(Optional.of(classroomBody));
+                .thenReturn(Optional.of(classroomInfo));
 
-        String classroomJson = objectMapper.writeValueAsString(classroomBody);
-        mockMvc.perform(get("/api/classrooms/" + 1))
+        String classroomJson = objectMapper.writeValueAsString(classroomInfo);
+        mockMvc.perform(get("/api/classrooms/" + 1 + "/info"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(classroomJson));
     }
@@ -185,8 +185,8 @@ public class ClassroomControllerTest {
     @WithUserDetails(value = authenticatedUsername, setupBefore = TestExecutionEvent.TEST_EXECUTION)
     public void getAttendingClassroomsShouldReturnClassroomsAttendedByUserAsStudent() throws Exception {
         AttendingClassrooms attendingClassrooms = new AttendingClassrooms(1L, Set.of(
-                new ClassroomBody(2L, new Teacher(3L, "first", "last"), "a", "b"),
-                new ClassroomBody(4L, new Teacher(5L, "a", "n"), "x", "z")
+                new ClassroomInfo(2L, new Teacher(3L, "first", "last"), "a", "b"),
+                new ClassroomInfo(4L, new Teacher(5L, "a", "n"), "x", "z")
         ));
         when(classroomService.findAttendingClassrooms(authenticatedUsername))
                 .thenReturn(Optional.of(attendingClassrooms));
@@ -257,12 +257,12 @@ public class ClassroomControllerTest {
     public void createClassroomSuccessShouldReturnCreatedStatusAndClassroom() throws Exception {
         ClassroomCreationPayload payload = new ClassroomCreationPayload(1, "title", "sub");
         String payloadJson = objectMapper.writeValueAsString(payload);
-        ClassroomBody classroomBody = new ClassroomBody(
+        ClassroomInfo classroomInfo = new ClassroomInfo(
                 2, new Teacher(1, "first", "last"), "title", "sub"
         );
-        String classroomBodyJson = objectMapper.writeValueAsString(classroomBody);
+        String classroomInfoJson = objectMapper.writeValueAsString(classroomInfo);
         when(classroomService.createClassroom(payload))
-                .thenReturn(Optional.of(classroomBody));
+                .thenReturn(Optional.of(classroomInfo));
 
         mockMvc.perform(
                         post("/api/classrooms/add")
@@ -271,7 +271,7 @@ public class ClassroomControllerTest {
                                 .content(payloadJson)
                 )
                 .andExpect(status().isCreated())
-                .andExpect(content().json(classroomBodyJson));
+                .andExpect(content().json(classroomInfoJson));
     }
 
     @Test
@@ -395,10 +395,10 @@ public class ClassroomControllerTest {
         UpdateClassroomPayload payload = new UpdateClassroomPayload(1L, "title", "sub");
         String payloadJson = objectMapper.writeValueAsString(payload);
         Teacher teacher = new Teacher(1, "first", "last");
-        ClassroomBody classroomBody = new ClassroomBody(2, teacher, "title", "subject");
-        String classroomBodyJson = objectMapper.writeValueAsString(classroomBody);
+        ClassroomInfo classroomInfo = new ClassroomInfo(2, teacher, "title", "subject");
+        String classroomInfoJson = objectMapper.writeValueAsString(classroomInfo);
         when(classroomService.updateClassroom(classroomId, payload))
-                .thenReturn(Optional.of(classroomBody));
+                .thenReturn(Optional.of(classroomInfo));
 
         mockMvc.perform(
                         patch("/api/classrooms/update/" + classroomId)
@@ -407,6 +407,6 @@ public class ClassroomControllerTest {
                                 .content(payloadJson)
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().json(classroomBodyJson));
+                .andExpect(content().json(classroomInfoJson));
     }
 }

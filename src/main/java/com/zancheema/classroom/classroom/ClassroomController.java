@@ -18,10 +18,10 @@ public class ClassroomController {
         this.classroomService = classroomService;
     }
 
-    @GetMapping("/{classroomId}")
+    @GetMapping("/{classroomId}/info")
     @PreAuthorize("hasAuthority(read)")
-    public ResponseEntity<ClassroomBody> getClassroom(@PathVariable("classroomId") long classroomId) {
-        Optional<ClassroomBody> classroom = classroomService.findClassroomById(classroomId);
+    public ResponseEntity<ClassroomInfo> getClassroom(@PathVariable("classroomId") long classroomId) {
+        Optional<ClassroomInfo> classroom = classroomService.findClassroomById(classroomId);
         return ResponseEntity.of(classroom);
     }
 
@@ -49,8 +49,8 @@ public class ClassroomController {
 
     @PostMapping("/add")
     @PreAuthorize("hasAuthority(write)")
-    public ResponseEntity<ClassroomBody> createClassroom(@RequestBody @Valid ClassroomCreationPayload payload) {
-        Optional<ClassroomBody> classroom = classroomService.createClassroom(payload);
+    public ResponseEntity<ClassroomInfo> createClassroom(@RequestBody @Valid ClassroomCreationPayload payload) {
+        Optional<ClassroomInfo> classroom = classroomService.createClassroom(payload);
         if (classroom.isEmpty()) return ResponseEntity.badRequest().build();
 
         return ResponseEntity
@@ -70,11 +70,11 @@ public class ClassroomController {
 
     @PatchMapping("/update/{classroomId}")
     @PreAuthorize("hasAuthority(write)")
-    public ResponseEntity<ClassroomBody> updateClassroom(
+    public ResponseEntity<ClassroomInfo> updateClassroom(
             @PathVariable("classroomId") long classroomId,
             @Valid @RequestBody UpdateClassroomPayload payload
     ) {
-        Optional<ClassroomBody> classroomBody = classroomService.updateClassroom(classroomId, payload);
+        Optional<ClassroomInfo> classroomBody = classroomService.updateClassroom(classroomId, payload);
         if (classroomBody.isEmpty()) return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(classroomBody.get());
     }

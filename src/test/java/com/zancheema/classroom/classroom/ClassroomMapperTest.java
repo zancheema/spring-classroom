@@ -1,6 +1,6 @@
 package com.zancheema.classroom.classroom;
 
-import com.zancheema.classroom.classroom.dto.ClassroomBody;
+import com.zancheema.classroom.classroom.dto.ClassroomInfo;
 import com.zancheema.classroom.classroom.dto.ClassroomStudents;
 import com.zancheema.classroom.classroom.dto.Student;
 import com.zancheema.classroom.user.User;
@@ -34,15 +34,15 @@ class ClassroomMapperTest {
         teacher.setLastName("doe");
         classroom.setTeacher(teacher);
 
-        ClassroomBody classroomBody = classroomMapper.toClassroomBody(classroom);
+        ClassroomInfo classroomInfo = classroomMapper.toClassroomBody(classroom);
 
-        assertThat(classroomBody).isNotNull();
-        assertThat(classroomBody.id()).isEqualTo(classroom.getId());
-        assertThat(classroomBody.title()).isEqualTo(classroom.getTitle());
-        assertThat(classroomBody.subject()).isEqualTo(classroom.getSubject());
-        assertThat(classroomBody.teacher().id()).isEqualTo(classroom.getTeacher().getId());
-        assertThat(classroomBody.teacher().firstName()).isEqualTo(classroom.getTeacher().getFirstName());
-        assertThat(classroomBody.teacher().lastName()).isEqualTo(classroom.getTeacher().getLastName());
+        assertThat(classroomInfo).isNotNull();
+        assertThat(classroomInfo.id()).isEqualTo(classroom.getId());
+        assertThat(classroomInfo.title()).isEqualTo(classroom.getTitle());
+        assertThat(classroomInfo.subject()).isEqualTo(classroom.getSubject());
+        assertThat(classroomInfo.teacher().id()).isEqualTo(classroom.getTeacher().getId());
+        assertThat(classroomInfo.teacher().firstName()).isEqualTo(classroom.getTeacher().getFirstName());
+        assertThat(classroomInfo.teacher().lastName()).isEqualTo(classroom.getTeacher().getLastName());
     }
 
     @Test

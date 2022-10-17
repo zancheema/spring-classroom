@@ -18,7 +18,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public Optional<ClassroomBody> findClassroomById(long classroomId) {
+    public Optional<ClassroomInfo> findClassroomById(long classroomId) {
         return classroomRepository.findById(classroomId)
                 .map(classroomMapper::toClassroomBody);
     }
@@ -26,7 +26,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Override
     public Optional<Teacher> findTeacher(long classroomId) {
         return this.findClassroomById(classroomId)
-                .map(ClassroomBody::teacher);
+                .map(ClassroomInfo::teacher);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public Optional<ClassroomBody> createClassroom(ClassroomCreationPayload payload) {
+    public Optional<ClassroomInfo> createClassroom(ClassroomCreationPayload payload) {
         Optional<User> teacher = userRepository.findById(payload.getTeacherId());
         if (teacher.isEmpty()) return Optional.empty();
 
@@ -45,9 +45,9 @@ public class ClassroomServiceImpl implements ClassroomService {
 
         Classroom savedClassroom = classroomRepository.save(classroom);
 
-        ClassroomBody classroomBody = classroomMapper.toClassroomBody(savedClassroom);
+        ClassroomInfo classroomInfo = classroomMapper.toClassroomBody(savedClassroom);
 
-        return Optional.of(classroomBody);
+        return Optional.of(classroomInfo);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public Optional<ClassroomBody> updateClassroom(long classroomId, UpdateClassroomPayload payload) {
+    public Optional<ClassroomInfo> updateClassroom(long classroomId, UpdateClassroomPayload payload) {
         Optional<Classroom> optionalClassroom = classroomRepository.findById(classroomId);
         Optional<User> optionalTeacher = userRepository.findById(payload.getTeacherId());
 
@@ -82,8 +82,8 @@ public class ClassroomServiceImpl implements ClassroomService {
 
         Classroom updatedClassroom = classroomRepository.save(classroom);
 
-        ClassroomBody classroomBody = classroomMapper.toClassroomBody(updatedClassroom);
-        return Optional.of(classroomBody);
+        ClassroomInfo classroomInfo = classroomMapper.toClassroomBody(updatedClassroom);
+        return Optional.of(classroomInfo);
     }
 
     @Override

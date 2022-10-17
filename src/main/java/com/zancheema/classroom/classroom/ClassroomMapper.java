@@ -1,6 +1,6 @@
 package com.zancheema.classroom.classroom;
 
-import com.zancheema.classroom.classroom.dto.ClassroomBody;
+import com.zancheema.classroom.classroom.dto.ClassroomInfo;
 import com.zancheema.classroom.classroom.dto.ClassroomStudents;
 import com.zancheema.classroom.classroom.dto.Student;
 import com.zancheema.classroom.classroom.dto.Teacher;
@@ -9,9 +9,9 @@ import com.zancheema.classroom.user.User;
 import java.util.stream.Collectors;
 
 public class ClassroomMapper {
-    public ClassroomBody toClassroomBody(Classroom classroom) {
+    public ClassroomInfo toClassroomBody(Classroom classroom) {
         User teacher = classroom.getTeacher();
-        return new ClassroomBody(
+        return new ClassroomInfo(
                 classroom.getId(),
                 new Teacher(teacher.getId(), teacher.getFirstName(), teacher.getLastName()),
                 classroom.getTitle(),
