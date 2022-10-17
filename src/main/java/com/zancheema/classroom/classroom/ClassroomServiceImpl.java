@@ -90,4 +90,9 @@ public class ClassroomServiceImpl implements ClassroomService {
     public Optional<AttendingClassrooms> findAttendingClassrooms(String username) {
         return Optional.empty();
     }
+
+    @Override
+    public Optional<ClassroomQuizzesInfo> findClassroomQuizInfos(long classroomId) {
+        return Optional.empty();
+    }
 }

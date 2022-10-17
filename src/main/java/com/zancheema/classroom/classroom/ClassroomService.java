@@ -18,4 +18,6 @@ public interface ClassroomService {
     Optional<ClassroomInfo> updateClassroom(long classroomId, UpdateClassroomPayload payload);
 
     Optional<AttendingClassrooms> findAttendingClassrooms(String username);
+
+    Optional<ClassroomQuizzesInfo> findClassroomQuizInfos(long classroomId);
 }

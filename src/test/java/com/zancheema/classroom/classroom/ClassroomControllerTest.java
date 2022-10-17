@@ -3,6 +3,7 @@ package com.zancheema.classroom.classroom;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zancheema.classroom.classroom.dto.*;
 import com.zancheema.classroom.config.SecurityConfig;
+import com.zancheema.classroom.quiz.dto.QuizInfo;
 import com.zancheema.classroom.user.User;
 import com.zancheema.classroom.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,10 +19,14 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.zancheema.classroom.common.Formats.DATE_FORMAT;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -42,7 +47,8 @@ public class ClassroomControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .setDateFormat(new SimpleDateFormat(DATE_FORMAT));
 
     private final String authenticatedUsername = "john@example.com";
     @Mock
@@ -408,5 +414,45 @@ public class ClassroomControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json(classroomInfoJson));
+    }
+
+    @Test
+    public void getClassroomQuizzesInfoWithoutAuthorizationShouldUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/classrooms/" + 1 + "/quizzes/info"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser
+    public void getClassroomQuizzesInfoWithoutReadAuthorityShouldReturnForbidden() throws Exception {
+        mockMvc.perform(get("/api/classrooms/" + 1 + "/quizzes/info"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(authorities = "read")
+    public void getClassroomQuizzesInfoNonExistentClassroomShouldReturnNotFound() throws Exception {
+        when(classroomService.findClassroomQuizInfos(1L))
+                .thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/classrooms/" + 1 + "/quizzes/info"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(authorities = "read")
+    public void getClassroomQuizzesInfoShouldReturnClassroomQuizzesObject() throws Exception {
+        ClassroomQuizzesInfo classroomQuizzesInfo = new ClassroomQuizzesInfo(
+                1L, Set.of(
+                new QuizInfo(2L, LocalDateTime.now(), LocalDateTime.now(), LocalTime.of(9, 20)),
+                new QuizInfo(3L, LocalDateTime.now(), LocalDateTime.now(), LocalTime.of(9, 30))
+        ));
+        String classroomQuizzesInfoJson = objectMapper.writeValueAsString(classroomQuizzesInfo);
+        when(classroomService.findClassroomQuizInfos(1L))
+                .thenReturn(Optional.of(classroomQuizzesInfo));
+
+        mockMvc.perform(get("/api/classrooms/" + 1 + "/quizzes/info"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(classroomQuizzesInfoJson));
     }
 }
