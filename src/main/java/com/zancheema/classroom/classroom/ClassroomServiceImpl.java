@@ -100,4 +100,9 @@ public class ClassroomServiceImpl implements ClassroomService {
     public Optional<ClassroomQuiz> findClassroomQuiz(long classroomId, long quizId) {
         return Optional.empty();
     }
+
+    @Override
+    public boolean submitQuiz(long classroomId, QuizSubmissionPayload payload) {
+        return false;
+    }
 }

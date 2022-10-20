@@ -22,4 +22,6 @@ public interface ClassroomService {
     Optional<ClassroomQuizzesInfo> findClassroomQuizInfos(long classroomId);
 
     Optional<ClassroomQuiz> findClassroomQuiz(long classroomId, long quizId);
+
+    boolean submitQuiz(long classroomId, QuizSubmissionPayload payload);
 }

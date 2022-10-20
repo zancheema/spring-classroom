@@ -31,7 +31,6 @@ public record ClassroomQuiz(
         Set<QuizQuestion> questions
 ) {
     public record QuizQuestion(
-            long questionId,
             int questionOrder,
             String statement,
             Set<Answer> answers

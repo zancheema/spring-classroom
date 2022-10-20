@@ -267,12 +267,12 @@ public class ClassroomControllerTest {
                 LocalDateTime.now().plusDays(1),
                 LocalTime.of(0, 30),
                 Set.of(
-                        new QuizQuestion(3L, 1, "Q1", Set.of(
+                        new QuizQuestion(1, "Q1", Set.of(
                                 new QuizQuestion.Answer(4L, 1, "A"),
                                 new QuizQuestion.Answer(5L, 2, "B"),
                                 new QuizQuestion.Answer(6L, 3, "C")
                         )),
-                        new QuizQuestion(7L, 1, "Q2", Set.of(
+                        new QuizQuestion(1, "Q2", Set.of(
                                 new QuizQuestion.Answer(8L, 1, "A"),
                                 new QuizQuestion.Answer(9L, 2, "B"),
                                 new QuizQuestion.Answer(10L, 3, "C")
@@ -286,5 +286,51 @@ public class ClassroomControllerTest {
         mockMvc.perform(get("/api/classrooms/" + quiz.classroomId() + "/quiz/" + quiz.quizId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(quizJson));
+    }
+
+    @Test
+    public void submitQuizFailureShouldReturnBadRequest() throws Exception {
+        long classroomId = 1;
+        QuizSubmissionPayload payload = new QuizSubmissionPayload(
+                1L,
+                Set.of(
+                        new QuizSubmissionPayload.SubmittedAnswer(2L, 3L),
+                        new QuizSubmissionPayload.SubmittedAnswer(4L, 5L)
+                )
+        );
+        String payloadJson = objectMapper.writeValueAsString(payload);
+        when(classroomService.submitQuiz(classroomId, payload))
+                .thenReturn(false);
+
+        mockMvc.perform(
+                post("/api/classrooms/" + classroomId + "/quiz/submit")
+                        .with(csrf())
+                        .contentType(APPLICATION_JSON)
+                        .content(payloadJson)
+                )
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void submitQuizSuccessShouldReturnOk() throws Exception {
+        long classroomId = 1;
+        QuizSubmissionPayload payload = new QuizSubmissionPayload(
+                1L,
+                Set.of(
+                        new QuizSubmissionPayload.SubmittedAnswer(2L, 3L),
+                        new QuizSubmissionPayload.SubmittedAnswer(4L, 5L)
+                )
+        );
+        String payloadJson = objectMapper.writeValueAsString(payload);
+        when(classroomService.submitQuiz(classroomId, payload))
+                .thenReturn(true);
+
+        mockMvc.perform(
+                        post("/api/classrooms/" + classroomId + "/quiz/submit")
+                                .with(csrf())
+                                .contentType(APPLICATION_JSON)
+                                .content(payloadJson)
+                )
+                .andExpect(status().isOk());
     }
 }

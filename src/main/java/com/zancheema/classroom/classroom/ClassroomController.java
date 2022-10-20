@@ -102,4 +102,17 @@ public class ClassroomController {
         Optional<ClassroomQuiz> classroomQuiz = classroomService.findClassroomQuiz(classroomId, quizId);
         return ResponseEntity.of(classroomQuiz);
     }
+
+    @PostMapping("/{classroomId}/quiz/submit")
+    @PreAuthorize("hasAuthority(write)")
+    public ResponseEntity<?> submitQuiz(
+            @PathVariable("classroomId") long classroomId,
+            @Valid @RequestBody QuizSubmissionPayload payload
+    ) {
+        boolean successful = classroomService.submitQuiz(classroomId, payload);
+        ResponseEntity.BodyBuilder response = successful
+                ? ResponseEntity.ok()
+                : ResponseEntity.badRequest();
+        return response.build();
+    }
 }
