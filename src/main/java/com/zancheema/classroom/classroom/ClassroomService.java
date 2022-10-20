@@ -20,4 +20,6 @@ public interface ClassroomService {
     Optional<AttendingClassrooms> findAttendingClassrooms(String username);
 
     Optional<ClassroomQuizzesInfo> findClassroomQuizInfos(long classroomId);
+
+    Optional<ClassroomQuiz> findClassroomQuiz(long classroomId, long quizId);
 }

@@ -2,6 +2,7 @@ package com.zancheema.classroom.classroom;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zancheema.classroom.classroom.dto.*;
+import com.zancheema.classroom.classroom.dto.ClassroomQuiz.QuizQuestion;
 import com.zancheema.classroom.config.SecurityConfig;
 import com.zancheema.classroom.quiz.dto.QuizInfo;
 import com.zancheema.classroom.user.User;
@@ -454,5 +455,56 @@ public class ClassroomControllerTest {
         mockMvc.perform(get("/api/classrooms/" + 1 + "/quizzes/info"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(classroomQuizzesInfoJson));
+    }
+
+    @Test
+    public void getClassroomQuizWithoutAuthorizationShouldReturnUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/classrooms/" + 1 + "/quiz/" + 2))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser
+    public void getClassroomQuizWithoutReadAuthorityShouldReturnForbidden() throws Exception {
+        mockMvc.perform(get("/api/classrooms/" + 1 + "/quiz/" + 2))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(authorities = "read")
+    public void getNotExistentClassroomQuizShouldReturnNotFound() throws Exception {
+        mockMvc.perform(get("/api/classrooms/" + 1 + "/quiz/" + 2))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(authorities = "read")
+    public void getClassroomQuizShouldReturnClassroomQuizObject() throws Exception {
+        ClassroomQuiz quiz = new ClassroomQuiz(
+                1L,
+                2L,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1),
+                LocalTime.of(0, 30),
+                Set.of(
+                        new QuizQuestion(3L, 1, "Q1", Set.of(
+                                new QuizQuestion.Answer(4L, 1, "A"),
+                                new QuizQuestion.Answer(5L, 2, "B"),
+                                new QuizQuestion.Answer(6L, 3, "C")
+                        )),
+                        new QuizQuestion(7L, 1, "Q2", Set.of(
+                                new QuizQuestion.Answer(8L, 1, "A"),
+                                new QuizQuestion.Answer(9L, 2, "B"),
+                                new QuizQuestion.Answer(10L, 3, "C")
+                        ))
+                )
+        );
+        when(classroomService.findClassroomQuiz(quiz.classroomId(), quiz.quizId()))
+                .thenReturn(Optional.of(quiz));
+
+        String quizJson = objectMapper.writeValueAsString(quiz);
+        mockMvc.perform(get("/api/classrooms/" + quiz.classroomId() + "/quiz/" + quiz.quizId()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(quizJson));
     }
 }

@@ -95,4 +95,9 @@ public class ClassroomServiceImpl implements ClassroomService {
     public Optional<ClassroomQuizzesInfo> findClassroomQuizInfos(long classroomId) {
         return Optional.empty();
     }
+
+    @Override
+    public Optional<ClassroomQuiz> findClassroomQuiz(long classroomId, long quizId) {
+        return Optional.empty();
+    }
 }

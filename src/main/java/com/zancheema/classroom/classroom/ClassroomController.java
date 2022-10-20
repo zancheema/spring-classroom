@@ -87,4 +87,14 @@ public class ClassroomController {
         Optional<ClassroomQuizzesInfo> infos = classroomService.findClassroomQuizInfos(classroomId);
         return ResponseEntity.of(infos);
     }
+
+    @GetMapping("/{classroomId}/quiz/{quizId}")
+    @PreAuthorize("hasAuthority(read)")
+    public ResponseEntity<ClassroomQuiz> getClassroomQuiz(
+            @PathVariable("classroomId") long classroomId,
+            @PathVariable("quizId") long quizId
+    ) {
+        Optional<ClassroomQuiz> classroomQuiz = classroomService.findClassroomQuiz(classroomId, quizId);
+        return ResponseEntity.of(classroomQuiz);
+    }
 }
