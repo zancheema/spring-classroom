@@ -25,6 +25,11 @@ public class ClassroomController {
         return ResponseEntity.of(classroom);
     }
 
+    /**
+     * Do not need {@link Optional} because if the user does not exist,
+     * they won't be authorized to reach to this endpoint,
+     * and result in 401.
+     */
     @GetMapping("/attending")
     @PreAuthorize("hasAuthority(read)")
     public AttendingClassrooms getAttendingClassrooms(
