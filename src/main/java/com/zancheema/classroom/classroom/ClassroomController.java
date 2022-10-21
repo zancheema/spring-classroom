@@ -2,7 +2,6 @@ package com.zancheema.classroom.classroom;
 
 import com.zancheema.classroom.classroom.dto.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +18,6 @@ public class ClassroomController {
     }
 
     @GetMapping("/{classroomId}/info")
-    @PreAuthorize("hasAuthority(read)")
     public ResponseEntity<ClassroomInfo> getClassroom(@PathVariable("classroomId") long classroomId) {
         Optional<ClassroomInfo> classroom = classroomService.findClassroomById(classroomId);
         return ResponseEntity.of(classroom);
@@ -31,7 +29,6 @@ public class ClassroomController {
      * and result in 401.
      */
     @GetMapping("/attending")
-    @PreAuthorize("hasAuthority(read)")
     public AttendingClassrooms getAttendingClassrooms(
             @AuthenticationPrincipal(expression = "username") String username
     ) {
@@ -39,21 +36,18 @@ public class ClassroomController {
     }
 
     @GetMapping("/{classroomId}/teacher")
-    @PreAuthorize("hasAuthority(read)")
     public ResponseEntity<Teacher> getClassroomTeacher(@PathVariable("classroomId") long classroomId) {
         Optional<Teacher> teacher = classroomService.findTeacher(classroomId);
         return ResponseEntity.of(teacher);
     }
 
     @GetMapping("/{classroomId}/students")
-    @PreAuthorize("hasAuthority(read)")
     public ResponseEntity<ClassroomStudents> getClassroomStudents(@PathVariable("classroomId") long classroomId) {
         Optional<ClassroomStudents> students = classroomService.findClassroomStudents(classroomId);
         return ResponseEntity.of(students);
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasAuthority(write)")
     public ResponseEntity<ClassroomInfo> createClassroom(@RequestBody @Valid ClassroomCreationPayload payload) {
         Optional<ClassroomInfo> classroom = classroomService.createClassroom(payload);
         if (classroom.isEmpty()) return ResponseEntity.badRequest().build();
@@ -64,7 +58,6 @@ public class ClassroomController {
     }
 
     @PostMapping("/add/student")
-    @PreAuthorize("hasAuthority(write)")
     public ResponseEntity<ClassroomStudent> addStudentToClassroom(
             @Valid @RequestBody ClassroomStudent classroomStudent
     ) {
@@ -74,7 +67,6 @@ public class ClassroomController {
     }
 
     @PatchMapping("/update/{classroomId}")
-    @PreAuthorize("hasAuthority(write)")
     public ResponseEntity<ClassroomInfo> updateClassroom(
             @PathVariable("classroomId") long classroomId,
             @Valid @RequestBody UpdateClassroomPayload payload
@@ -85,7 +77,6 @@ public class ClassroomController {
     }
 
     @GetMapping("/{classroomId}/quizzes/info")
-    @PreAuthorize("hasAuthority(read)")
     public ResponseEntity<ClassroomQuizzesInfo> getClassroomQuizzesInfos(
             @PathVariable("classroomId") long classroomId
     ) {
@@ -94,7 +85,6 @@ public class ClassroomController {
     }
 
     @GetMapping("/{classroomId}/quiz/{quizId}")
-    @PreAuthorize("hasAuthority(read)")
     public ResponseEntity<ClassroomQuiz> getClassroomQuiz(
             @PathVariable("classroomId") long classroomId,
             @PathVariable("quizId") long quizId
@@ -104,7 +94,6 @@ public class ClassroomController {
     }
 
     @PostMapping("/{classroomId}/quiz/submit")
-    @PreAuthorize("hasAuthority(write)")
     public ResponseEntity<?> submitQuiz(
             @PathVariable("classroomId") long classroomId,
             @Valid @RequestBody QuizSubmissionPayload payload

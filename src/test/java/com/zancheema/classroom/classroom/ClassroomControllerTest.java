@@ -49,7 +49,7 @@ public class ClassroomControllerTest {
     }
 
     @Test
-    public void getClassroomWithValidClassroomIdShouldReturnClassroomList() throws Exception {
+    public void getClassroomWithValidClassroomIdShouldReturnClassroomInfoObject() throws Exception {
         ClassroomInfo classroomInfo = new ClassroomInfo(
                 1, new Teacher(2, "john", "doe"), "title", "subject"
         );
