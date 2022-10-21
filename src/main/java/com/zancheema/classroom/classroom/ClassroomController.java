@@ -57,16 +57,17 @@ public class ClassroomController {
                 .body(classroom.get());
     }
 
-    @PostMapping("/add/student")
+    @PostMapping("{classroomId}/add/student")
     public ResponseEntity<ClassroomStudent> addStudentToClassroom(
+            @PathVariable("classroomId") long classroomId,
             @Valid @RequestBody ClassroomStudent classroomStudent
     ) {
-        Optional<ClassroomStudent> result = classroomService.addStudentToClassroom(classroomStudent);
+        Optional<ClassroomStudent> result = classroomService.addStudentToClassroom(classroomId, classroomStudent);
         if (result.isEmpty()) return ResponseEntity.badRequest().build();
         return ResponseEntity.created(null).body(result.get());
     }
 
-    @PatchMapping("/update/{classroomId}")
+    @PatchMapping("/{classroomId}/update")
     public ResponseEntity<ClassroomInfo> updateClassroom(
             @PathVariable("classroomId") long classroomId,
             @Valid @RequestBody UpdateClassroomPayload payload

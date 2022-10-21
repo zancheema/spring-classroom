@@ -13,7 +13,7 @@ public interface ClassroomService {
 
     Optional<ClassroomInfo> createClassroom(ClassroomCreationPayload payload);
 
-    Optional<ClassroomStudent> addStudentToClassroom(ClassroomStudent payload);
+    Optional<ClassroomStudent> addStudentToClassroom(long classroomId, ClassroomStudent payload);
 
     Optional<ClassroomInfo> updateClassroom(long classroomId, UpdateClassroomPayload payload);
 

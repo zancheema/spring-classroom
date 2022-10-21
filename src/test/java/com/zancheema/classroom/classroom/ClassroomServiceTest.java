@@ -166,36 +166,39 @@ public class ClassroomServiceTest {
 
     @Test
     public void addInvalidStudentToClassroomShouldReturnEmpty() {
-        ClassroomStudent mockClassroomStudent = new ClassroomStudent(1L, 2L);
-        when(classroomRepository.findById(mockClassroomStudent.getClassId()))
+        long classroomId = 1L;
+        ClassroomStudent mockClassroomStudent = new ClassroomStudent(2L);
+        when(classroomRepository.findById(classroomId))
                 .thenReturn(Optional.empty());
 
         Optional<ClassroomStudent> optionalClassroomStudent = classroomService
-                .addStudentToClassroom(mockClassroomStudent);
+                .addStudentToClassroom(classroomId, mockClassroomStudent);
 
         assertThat(optionalClassroomStudent).isEmpty();
     }
 
     @Test
     public void addStudentToInvalidClassroomShouldReturnEmpty() {
-        ClassroomStudent mockClassroomStudent = new ClassroomStudent(1L, 2L);
+        long classroomId = 1L;
+        ClassroomStudent mockClassroomStudent = new ClassroomStudent(2L);
         when(userRepository.findById(mockClassroomStudent.getStudentId()))
                 .thenReturn(Optional.empty());
 
         Optional<ClassroomStudent> optionalClassroomStudent = classroomService
-                .addStudentToClassroom(mockClassroomStudent);
+                .addStudentToClassroom(classroomId, mockClassroomStudent);
 
         assertThat(optionalClassroomStudent).isEmpty();
     }
 
     @Test
     public void addStudentToClassroomSuccessShouldReturnClassroomStudent() {
-        ClassroomStudent mockClassroomStudent = new ClassroomStudent(1L, 2L);
+        long classroomId = 1L;
+        ClassroomStudent mockClassroomStudent = new ClassroomStudent(2L);
         User student = new User();
         student.setId(2L);
         when(userRepository.findById(mockClassroomStudent.getStudentId()))
                 .thenReturn(Optional.of(student));
-        when(classroomRepository.findById(mockClassroomStudent.getClassId()))
+        when(classroomRepository.findById(classroomId))
                 .thenReturn(Optional.of(classroomObj));
         Classroom savedClassroom = new Classroom();
         savedClassroom.setId(5L);
@@ -203,7 +206,7 @@ public class ClassroomServiceTest {
                 .thenReturn(savedClassroom);
 
         Optional<ClassroomStudent> optionalClassroomStudent = classroomService
-                .addStudentToClassroom(mockClassroomStudent);
+                .addStudentToClassroom(classroomId, mockClassroomStudent);
 
         assertThat(optionalClassroomStudent).isPresent();
         assertThat(classroomObj.getStudents()).contains(student);

@@ -10,6 +10,5 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClassroomStudent {
-    private @NotNull Long classId;
     private @NotNull Long studentId;
 }

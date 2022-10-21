@@ -158,13 +158,13 @@ public class ClassroomControllerTest {
 
     @Test
     public void addStudentToClassroomFailureShouldReturnBadRequest() throws Exception {
-        ClassroomStudent classroomStudent = new ClassroomStudent(1L, 2L);
+        ClassroomStudent classroomStudent = new ClassroomStudent(2L);
         String classroomStudentJson = objectMapper.writeValueAsString(classroomStudent);
-        when(classroomService.addStudentToClassroom(classroomStudent))
+        when(classroomService.addStudentToClassroom(1L, classroomStudent))
                 .thenReturn(Optional.empty());
 
         mockMvc.perform(
-                        post("/api/classrooms/add/student/")
+                        post("/api/classrooms/" + 1 + "/add/student/")
                                 .with(csrf())
                                 .contentType(APPLICATION_JSON)
                                 .content(classroomStudentJson)
@@ -174,13 +174,13 @@ public class ClassroomControllerTest {
 
     @Test
     public void addStudentToClassroomSuccessShouldReturnClassroomStudentObject() throws Exception {
-        ClassroomStudent classroomStudent = new ClassroomStudent(1L, 2L);
+        ClassroomStudent classroomStudent = new ClassroomStudent(2L);
         String classroomStudentJson = objectMapper.writeValueAsString(classroomStudent);
-        when(classroomService.addStudentToClassroom(classroomStudent))
+        when(classroomService.addStudentToClassroom(1L, classroomStudent))
                 .thenReturn(Optional.of(classroomStudent));
 
         mockMvc.perform(
-                        post("/api/classrooms/add/student")
+                        post("/api/classrooms/" + 1 + "/add/student")
                                 .with(csrf())
                                 .contentType(APPLICATION_JSON)
                                 .content(classroomStudentJson)
@@ -198,7 +198,7 @@ public class ClassroomControllerTest {
                 .thenReturn(Optional.empty());
 
         mockMvc.perform(
-                        patch("/api/classrooms/update/" + classroomId)
+                        patch("/api/classrooms/" + classroomId + "/update")
                                 .with(csrf())
                                 .contentType(APPLICATION_JSON)
                                 .content(payloadJson)
@@ -218,7 +218,7 @@ public class ClassroomControllerTest {
                 .thenReturn(Optional.of(classroomInfo));
 
         mockMvc.perform(
-                        patch("/api/classrooms/update/" + classroomId)
+                        patch("/api/classrooms/" + classroomId + "/update")
                                 .with(csrf())
                                 .contentType(APPLICATION_JSON)
                                 .content(payloadJson)
@@ -303,10 +303,10 @@ public class ClassroomControllerTest {
                 .thenReturn(false);
 
         mockMvc.perform(
-                post("/api/classrooms/" + classroomId + "/quiz/submit")
-                        .with(csrf())
-                        .contentType(APPLICATION_JSON)
-                        .content(payloadJson)
+                        post("/api/classrooms/" + classroomId + "/quiz/submit")
+                                .with(csrf())
+                                .contentType(APPLICATION_JSON)
+                                .content(payloadJson)
                 )
                 .andExpect(status().isBadRequest());
     }

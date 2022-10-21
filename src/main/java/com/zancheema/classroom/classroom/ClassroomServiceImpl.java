@@ -51,8 +51,8 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public Optional<ClassroomStudent> addStudentToClassroom(ClassroomStudent payload) {
-        Optional<Classroom> optionalClassroom = classroomRepository.findById(payload.getClassId());
+    public Optional<ClassroomStudent> addStudentToClassroom(long classroomId, ClassroomStudent payload) {
+        Optional<Classroom> optionalClassroom = classroomRepository.findById(classroomId);
         Optional<User> optionalStudent = userRepository.findById(payload.getStudentId());
 
         if (optionalClassroom.isEmpty() || optionalStudent.isEmpty()) {
