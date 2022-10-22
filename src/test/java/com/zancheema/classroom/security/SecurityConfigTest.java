@@ -47,6 +47,9 @@ class SecurityConfigTest {
     @MockBean
     private ClassroomService classroomService;
 
+    @MockBean
+    private SecurityService securityService;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test

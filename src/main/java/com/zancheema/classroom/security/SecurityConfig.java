@@ -8,9 +8,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -19,10 +22,14 @@ public class SecurityConfig {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SecurityService securityService;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .httpBasic(withDefaults())
+                .addFilterAfter(classroomSecurityFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(authz -> authz
                         .antMatchers("/auth/**").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/**").hasAuthority("read")
@@ -31,6 +38,16 @@ public class SecurityConfig {
                         .anyRequest().denyAll()
                 );
         return http.build();
+    }
+
+    @Bean
+    public ClassroomSecurityFilter classroomSecurityFilter() {
+        return new ClassroomSecurityFilter(securityService, securityContext());
+    }
+
+    @Bean
+    public SecurityContext securityContext() {
+        return SecurityContextHolder.getContext();
     }
 
     @Bean
