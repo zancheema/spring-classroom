@@ -2,6 +2,7 @@ package com.zancheema.classroom.security;
 
 import com.zancheema.classroom.user.User;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -10,14 +11,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class ClassroomStudentOrTeacherFilter extends OncePerRequestFilter {
+public class ClassroomSecurityFilter extends OncePerRequestFilter {
     public static final String API_CLASSROOMS = "/api/classrooms/";
 
     private final SecurityService securityService;
 
     private final SecurityContext securityContext;
 
-    public ClassroomStudentOrTeacherFilter(SecurityService securityService, SecurityContext securityContext) {
+    public ClassroomSecurityFilter(SecurityService securityService, SecurityContext securityContext) {
         this.securityService = securityService;
         this.securityContext = securityContext;
     }
@@ -35,7 +36,11 @@ public class ClassroomStudentOrTeacherFilter extends OncePerRequestFilter {
                 boolean isStudent = securityService.classHasTheStudent(classroomId, user.getId());
                 boolean isTeacher = securityService.classHasTheTeacher(classroomId, user.getId());
 
-                if (isStudent || isTeacher) {
+                boolean read = request.getMethod().equals(RequestMethod.GET.name());
+                if (
+                        (read && (isStudent || isTeacher)) ||
+                                (!read && isTeacher)
+                ) {
                     filterChain.doFilter(request, response);
                 } else {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
