@@ -1,11 +1,10 @@
 package com.zancheema.classroom.classroom;
 
-import com.zancheema.classroom.classroom.dto.ClassroomInfo;
-import com.zancheema.classroom.classroom.dto.ClassroomStudents;
-import com.zancheema.classroom.classroom.dto.Student;
-import com.zancheema.classroom.classroom.dto.Teacher;
+import com.zancheema.classroom.classroom.dto.*;
+import com.zancheema.classroom.quiz.Quiz;
 import com.zancheema.classroom.user.User;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ClassroomMapper {
@@ -38,5 +37,19 @@ public class ClassroomMapper {
         classroom.setTitle(title);
         classroom.setSubject(subject);
         return classroom;
+    }
+
+    public ClassroomQuizzesInfo toClassroomQuizzesInfo(Classroom classroom) {
+        Set<ClassroomQuizzesInfo.QuizInfo> quizInfos = classroom.getQuizzes()
+                .stream()
+                .map(this::toQuizInfo)
+                .collect(Collectors.toSet());
+        return new ClassroomQuizzesInfo(classroom.getId(), quizInfos);
+    }
+
+    private ClassroomQuizzesInfo.QuizInfo toQuizInfo(Quiz quiz) {
+        return new ClassroomQuizzesInfo.QuizInfo(
+                quiz.getId(), quiz.getUploadedAt(), quiz.getDeadline(),quiz.getDuration()
+        );
     }
 }

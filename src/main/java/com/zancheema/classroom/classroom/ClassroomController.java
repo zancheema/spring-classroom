@@ -81,7 +81,7 @@ public class ClassroomController {
     public ResponseEntity<ClassroomQuizzesInfo> getClassroomQuizzesInfos(
             @PathVariable("classroomId") long classroomId
     ) {
-        Optional<ClassroomQuizzesInfo> infos = classroomService.findClassroomQuizInfos(classroomId);
+        Optional<ClassroomQuizzesInfo> infos = classroomService.findClassroomQuizzesInfo(classroomId);
         return ResponseEntity.of(infos);
     }
 

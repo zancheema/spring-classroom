@@ -3,7 +3,6 @@ package com.zancheema.classroom.classroom;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zancheema.classroom.classroom.dto.*;
 import com.zancheema.classroom.classroom.dto.ClassroomQuiz.QuizQuestion;
-import com.zancheema.classroom.quiz.dto.QuizInfo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -229,7 +228,7 @@ public class ClassroomControllerTest {
 
     @Test
     public void getClassroomQuizzesInfoNonExistentClassroomShouldReturnNotFound() throws Exception {
-        when(classroomService.findClassroomQuizInfos(1L))
+        when(classroomService.findClassroomQuizzesInfo(1L))
                 .thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/classrooms/" + 1 + "/quizzes/info"))
@@ -240,11 +239,11 @@ public class ClassroomControllerTest {
     public void getClassroomQuizzesInfoShouldReturnClassroomQuizzesObject() throws Exception {
         ClassroomQuizzesInfo classroomQuizzesInfo = new ClassroomQuizzesInfo(
                 1L, Set.of(
-                new QuizInfo(2L, LocalDateTime.now(), LocalDateTime.now(), LocalTime.of(9, 20)),
-                new QuizInfo(3L, LocalDateTime.now(), LocalDateTime.now(), LocalTime.of(9, 30))
+                new ClassroomQuizzesInfo.QuizInfo(2L, LocalDateTime.now(), LocalDateTime.now(), LocalTime.of(9, 20)),
+                new ClassroomQuizzesInfo.QuizInfo(3L, LocalDateTime.now(), LocalDateTime.now(), LocalTime.of(9, 30))
         ));
         String classroomQuizzesInfoJson = objectMapper.writeValueAsString(classroomQuizzesInfo);
-        when(classroomService.findClassroomQuizInfos(1L))
+        when(classroomService.findClassroomQuizzesInfo(1L))
                 .thenReturn(Optional.of(classroomQuizzesInfo));
 
         mockMvc.perform(get("/api/classrooms/" + 1 + "/quizzes/info"))

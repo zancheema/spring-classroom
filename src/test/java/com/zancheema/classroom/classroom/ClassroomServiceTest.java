@@ -1,6 +1,7 @@
 package com.zancheema.classroom.classroom;
 
 import com.zancheema.classroom.classroom.dto.*;
+import com.zancheema.classroom.quiz.Quiz;
 import com.zancheema.classroom.user.User;
 import com.zancheema.classroom.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -307,5 +310,34 @@ public class ClassroomServiceTest {
         assertThat(attendingClassrooms.studentId()).isEqualTo(user.getId());
         assertThat(attendingClassrooms.attendingClassrooms()).size().isEqualTo(classrooms.size());
         assertThat(attendingClassrooms.attendingClassrooms()).contains(info1, info2);
+    }
+
+    @Test
+    public void findClassroomQuizzesInfoWhenClassroomIdAndQuizIdCombinationIsInvalidShouldReturnEmpty() {
+        when(classroomRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        Optional<ClassroomQuizzesInfo> info = classroomService.findClassroomQuizzesInfo(1L);
+
+        assertThat(info).isEmpty();
+    }
+
+    @Test
+    public void findClassroomQuizzesInfoSuccessShouldReturnClassroomQuizzesInfoObject() {
+        Quiz quiz1 = new Quiz(2, null, LocalDateTime.now(), LocalTime.now());
+        Quiz quiz2 = new Quiz(2, null, LocalDateTime.now(), LocalTime.now());
+        Classroom classroom = new Classroom(
+                1, null, null, null, null, Set.of(quiz1, quiz2));
+        when(classroomRepository.findById(1L))
+                .thenReturn(Optional.of(classroom));
+        ClassroomQuizzesInfo mockInfo = new ClassroomQuizzesInfo(3, Set.of());
+        when(classroomMapper.toClassroomQuizzesInfo(classroom))
+                .thenReturn(mockInfo);
+
+        Optional<ClassroomQuizzesInfo> optionalInfo = classroomService.findClassroomQuizzesInfo(1);
+
+        assertThat(optionalInfo).isPresent();
+        ClassroomQuizzesInfo info = optionalInfo.get();
+        assertThat(info).isEqualTo(mockInfo);
     }
 }

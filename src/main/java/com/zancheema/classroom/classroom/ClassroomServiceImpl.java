@@ -103,8 +103,13 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public Optional<ClassroomQuizzesInfo> findClassroomQuizInfos(long classroomId) {
-        return Optional.empty();
+    public Optional<ClassroomQuizzesInfo> findClassroomQuizzesInfo(long classroomId) {
+        Optional<Classroom> optionalClassroom = classroomRepository.findById(classroomId);
+        if (optionalClassroom.isEmpty()) return Optional.empty();
+
+        Classroom classroom = optionalClassroom.get();
+        ClassroomQuizzesInfo info = classroomMapper.toClassroomQuizzesInfo(classroom);
+        return Optional.of(info);
     }
 
     @Override

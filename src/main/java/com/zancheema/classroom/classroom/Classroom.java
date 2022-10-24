@@ -1,5 +1,6 @@
 package com.zancheema.classroom.classroom;
 
+import com.zancheema.classroom.quiz.Quiz;
 import com.zancheema.classroom.user.User;
 
 import javax.persistence.*;
@@ -18,6 +19,9 @@ public class Classroom {
     @ManyToMany
     private Set<User> students = new HashSet<>();
 
+    @OneToMany
+    private Set<Quiz> quizzes = new HashSet<>();
+
     @Column(nullable = false)
     private String title;
 
@@ -33,6 +37,11 @@ public class Classroom {
         this.students = students;
         this.title = title;
         this.subject = subject;
+    }
+
+    public Classroom(long id, User teacher, Set<User> students, String title, String subject, Set<Quiz> quizzes) {
+        this(id, teacher, students, title, subject);
+        this.quizzes = quizzes;
     }
 
     public long getId() {
@@ -57,6 +66,14 @@ public class Classroom {
 
     public void setStudents(Set<User> students) {
         this.students = students;
+    }
+
+    public Set<Quiz> getQuizzes() {
+        return quizzes;
+    }
+
+    public void setQuizzes(Set<Quiz> quizzes) {
+        this.quizzes = quizzes;
     }
 
     public String getTitle() {
