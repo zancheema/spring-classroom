@@ -9,7 +9,7 @@ import com.zancheema.classroom.user.User;
 import java.util.stream.Collectors;
 
 public class ClassroomMapper {
-    public ClassroomInfo toClassroomBody(Classroom classroom) {
+    public ClassroomInfo toClassroomInfo(Classroom classroom) {
         User teacher = classroom.getTeacher();
         return new ClassroomInfo(
                 classroom.getId(),

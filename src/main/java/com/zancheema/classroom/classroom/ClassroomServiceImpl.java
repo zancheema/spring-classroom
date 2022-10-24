@@ -5,6 +5,8 @@ import com.zancheema.classroom.user.User;
 import com.zancheema.classroom.user.UserRepository;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ClassroomServiceImpl implements ClassroomService {
     private final ClassroomRepository classroomRepository;
@@ -20,7 +22,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Override
     public Optional<ClassroomInfo> findClassroomById(long classroomId) {
         return classroomRepository.findById(classroomId)
-                .map(classroomMapper::toClassroomBody);
+                .map(classroomMapper::toClassroomInfo);
     }
 
     @Override
@@ -45,7 +47,7 @@ public class ClassroomServiceImpl implements ClassroomService {
 
         Classroom savedClassroom = classroomRepository.save(classroom);
 
-        ClassroomInfo classroomInfo = classroomMapper.toClassroomBody(savedClassroom);
+        ClassroomInfo classroomInfo = classroomMapper.toClassroomInfo(savedClassroom);
 
         return Optional.of(classroomInfo);
     }
@@ -82,13 +84,22 @@ public class ClassroomServiceImpl implements ClassroomService {
 
         Classroom updatedClassroom = classroomRepository.save(classroom);
 
-        ClassroomInfo classroomInfo = classroomMapper.toClassroomBody(updatedClassroom);
+        ClassroomInfo classroomInfo = classroomMapper.toClassroomInfo(updatedClassroom);
         return Optional.of(classroomInfo);
     }
 
     @Override
     public Optional<AttendingClassrooms> findAttendingClassrooms(String username) {
-        return Optional.empty();
+        Optional<User> optionalUser = userRepository.findByEmail(username);
+        if (optionalUser.isEmpty()) return Optional.empty();
+
+        User user = optionalUser.get();
+        Set<ClassroomInfo> classrooms = classroomRepository.findByStudentsId(user.getId())
+                .stream()
+                .map(classroomMapper::toClassroomInfo)
+                .collect(Collectors.toSet());
+
+        return Optional.of(new AttendingClassrooms(user.getId(), classrooms));
     }
 
     @Override

@@ -34,7 +34,7 @@ class ClassroomMapperTest {
         teacher.setLastName("doe");
         classroom.setTeacher(teacher);
 
-        ClassroomInfo classroomInfo = classroomMapper.toClassroomBody(classroom);
+        ClassroomInfo classroomInfo = classroomMapper.toClassroomInfo(classroom);
 
         assertThat(classroomInfo).isNotNull();
         assertThat(classroomInfo.id()).isEqualTo(classroom.getId());

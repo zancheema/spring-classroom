@@ -24,6 +24,17 @@ public class Classroom {
     @Column(nullable = false)
     private String subject;
 
+    public Classroom() {
+    }
+
+    public Classroom(long id, User teacher, Set<User> students, String title, String subject) {
+        this.id = id;
+        this.teacher = teacher;
+        this.students = students;
+        this.title = title;
+        this.subject = subject;
+    }
+
     public long getId() {
         return id;
     }

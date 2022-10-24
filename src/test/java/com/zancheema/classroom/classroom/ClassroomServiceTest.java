@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -64,7 +65,7 @@ public class ClassroomServiceTest {
         when(classroomRepository.findById(1L))
                 .thenReturn(Optional.of(classroomObj));
         ClassroomInfo mockClassroomInfo = new ClassroomInfo(3L, null, null, null);
-        when(classroomMapper.toClassroomBody(classroomObj))
+        when(classroomMapper.toClassroomInfo(classroomObj))
                 .thenReturn(mockClassroomInfo);
 
         Optional<ClassroomInfo> optionalClassroomBody = classroomService.findClassroomById(1L);
@@ -91,7 +92,7 @@ public class ClassroomServiceTest {
         ClassroomInfo mockClassroomInfo = new ClassroomInfo(
                 3L, new Teacher(4L, "first", "last"), null, null
         );
-        when(classroomMapper.toClassroomBody(classroomObj))
+        when(classroomMapper.toClassroomInfo(classroomObj))
                 .thenReturn(mockClassroomInfo);
 
         Optional<Teacher> optionalTeacher = classroomService.findTeacher(1L);
@@ -153,7 +154,7 @@ public class ClassroomServiceTest {
         ClassroomInfo mockClassroomInfo = new ClassroomInfo(
                 3L, new Teacher(4L, "first", "last"), null, null
         );
-        when(classroomMapper.toClassroomBody(savedClassroom))
+        when(classroomMapper.toClassroomInfo(savedClassroom))
                 .thenReturn(mockClassroomInfo);
 
 
@@ -251,7 +252,7 @@ public class ClassroomServiceTest {
         when(classroomRepository.save(classroomObj))
                 .thenReturn(updatedClassroom);
         ClassroomInfo updatedClassroomInfo = new ClassroomInfo(6L, null, "", "");
-        when(classroomMapper.toClassroomBody(updatedClassroom))
+        when(classroomMapper.toClassroomInfo(updatedClassroom))
                 .thenReturn(updatedClassroomInfo);
 
         Optional<ClassroomInfo> optionalClassroomBody = classroomService
@@ -265,5 +266,46 @@ public class ClassroomServiceTest {
         assertThat(classroomObj.getTeacher()).isEqualTo(mockTeacher);
         assertThat(classroomObj.getTitle()).isEqualTo(payload.getTitle());
         assertThat(classroomObj.getSubject()).isEqualTo(payload.getSubject());
+    }
+
+    @Test
+    public void getAttendingClassroomsWithInvalidUsernameShouldReturnEmpty() {
+        when(userRepository.findByEmail("user"))
+                .thenReturn(Optional.empty());
+
+        Optional<AttendingClassrooms> attendingClassrooms = classroomService
+                .findAttendingClassrooms("user");
+
+        assertThat(attendingClassrooms).isEmpty();
+    }
+
+    @Test
+    public void getAttendingClassroomsSuccessShouldReturnAttendingClassroomsObject() {
+        User user = new User();
+        user.setId(1);
+        user.setEmail("user");
+        when(userRepository.findByEmail("user"))
+                .thenReturn(Optional.of(user));
+        List<Classroom> classrooms = List.of(
+                new Classroom(2, user, Set.of(user), "title", "sub"),
+                new Classroom(3, user, Set.of(user), "title2", "sub2")
+        );
+        when(classroomRepository.findByStudentsId(user.getId()))
+                .thenReturn(classrooms);
+        ClassroomInfo info1 = new ClassroomInfo(1, null, null, null);
+        when(classroomMapper.toClassroomInfo(classrooms.get(0)))
+                .thenReturn(info1);
+        ClassroomInfo info2 = new ClassroomInfo(2, null, null, null);
+        when(classroomMapper.toClassroomInfo(classrooms.get(1)))
+                .thenReturn(info2);
+
+        Optional<AttendingClassrooms> optionalAttendingClassrooms = classroomService
+                .findAttendingClassrooms(user.getEmail());
+
+        assertThat(optionalAttendingClassrooms).isPresent();
+        AttendingClassrooms attendingClassrooms = optionalAttendingClassrooms.get();
+        assertThat(attendingClassrooms.studentId()).isEqualTo(user.getId());
+        assertThat(attendingClassrooms.attendingClassrooms()).size().isEqualTo(classrooms.size());
+        assertThat(attendingClassrooms.attendingClassrooms()).contains(info1, info2);
     }
 }
