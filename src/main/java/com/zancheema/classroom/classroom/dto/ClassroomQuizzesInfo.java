@@ -13,9 +13,9 @@ import java.util.Set;
 
 public record ClassroomQuizzesInfo(
         long classroomId,
-        Set<QuizInfo> quizInfos
+        Set<classroomQuizInfo> quizzes
 ) {
-    public record QuizInfo(
+    public record classroomQuizInfo(
             long id,
 
             @JsonSerialize(using = LocalDateTimeSerializer.class)

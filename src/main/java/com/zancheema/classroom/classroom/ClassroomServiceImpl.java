@@ -1,6 +1,8 @@
 package com.zancheema.classroom.classroom;
 
 import com.zancheema.classroom.classroom.dto.*;
+import com.zancheema.classroom.quiz.QuizMapper;
+import com.zancheema.classroom.quiz.dto.QuizInfo;
 import com.zancheema.classroom.user.User;
 import com.zancheema.classroom.user.UserRepository;
 
@@ -12,11 +14,13 @@ public class ClassroomServiceImpl implements ClassroomService {
     private final ClassroomRepository classroomRepository;
     private final ClassroomMapper classroomMapper;
     private final UserRepository userRepository;
+    private final QuizMapper quizMapper;
 
-    public ClassroomServiceImpl(ClassroomRepository classroomRepository, ClassroomMapper classroomMapper, UserRepository userRepository) {
+    public ClassroomServiceImpl(ClassroomRepository classroomRepository, ClassroomMapper classroomMapper, UserRepository userRepository, QuizMapper quizMapper) {
         this.classroomRepository = classroomRepository;
         this.classroomMapper = classroomMapper;
         this.userRepository = userRepository;
+        this.quizMapper = quizMapper;
     }
 
     @Override
@@ -113,8 +117,16 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public Optional<ClassroomQuiz> findClassroomQuiz(long classroomId, long quizId) {
-        return Optional.empty();
+    public Optional<QuizInfo> findQuizInfo(long classroomId, long quizId) {
+        Optional<Classroom> optionalClassroom = classroomRepository.findById(classroomId);
+        if (optionalClassroom.isEmpty()) return Optional.empty();
+
+        Classroom classroom = optionalClassroom.get();
+        return classroom.getQuizzes()
+                .stream()
+                .filter(quiz -> quizId == quiz.getId())
+                .map(quizMapper::toQuizInfo)
+                .findFirst();
     }
 
     @Override

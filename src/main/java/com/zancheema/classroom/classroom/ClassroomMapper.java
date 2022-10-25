@@ -40,15 +40,15 @@ public class ClassroomMapper {
     }
 
     public ClassroomQuizzesInfo toClassroomQuizzesInfo(Classroom classroom) {
-        Set<ClassroomQuizzesInfo.QuizInfo> quizInfos = classroom.getQuizzes()
+        Set<ClassroomQuizzesInfo.classroomQuizInfo> classroomQuizInfos = classroom.getQuizzes()
                 .stream()
                 .map(this::toQuizInfo)
                 .collect(Collectors.toSet());
-        return new ClassroomQuizzesInfo(classroom.getId(), quizInfos);
+        return new ClassroomQuizzesInfo(classroom.getId(), classroomQuizInfos);
     }
 
-    private ClassroomQuizzesInfo.QuizInfo toQuizInfo(Quiz quiz) {
-        return new ClassroomQuizzesInfo.QuizInfo(
+    private ClassroomQuizzesInfo.classroomQuizInfo toQuizInfo(Quiz quiz) {
+        return new ClassroomQuizzesInfo.classroomQuizInfo(
                 quiz.getId(), quiz.getUploadedAt(), quiz.getDeadline(),quiz.getDuration()
         );
     }

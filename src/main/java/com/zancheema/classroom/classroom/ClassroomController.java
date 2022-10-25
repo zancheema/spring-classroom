@@ -1,6 +1,7 @@
 package com.zancheema.classroom.classroom;
 
 import com.zancheema.classroom.classroom.dto.*;
+import com.zancheema.classroom.quiz.dto.QuizInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -86,11 +87,11 @@ public class ClassroomController {
     }
 
     @GetMapping("/{classroomId}/quiz/{quizId}")
-    public ResponseEntity<ClassroomQuiz> getClassroomQuiz(
+    public ResponseEntity<QuizInfo> getClassroomQuiz(
             @PathVariable("classroomId") long classroomId,
             @PathVariable("quizId") long quizId
     ) {
-        Optional<ClassroomQuiz> classroomQuiz = classroomService.findClassroomQuiz(classroomId, quizId);
+        Optional<QuizInfo> classroomQuiz = classroomService.findQuizInfo(classroomId, quizId);
         return ResponseEntity.of(classroomQuiz);
     }
 

@@ -1,8 +1,11 @@
 package com.zancheema.classroom.classroom;
 
 import com.zancheema.classroom.classroom.dto.*;
+import com.zancheema.classroom.quiz.dto.QuizInfo;
 
 import java.util.Optional;
+
+
 
 public interface ClassroomService {
     Optional<ClassroomInfo> findClassroomById(long classroomId);
@@ -21,7 +24,7 @@ public interface ClassroomService {
 
     Optional<ClassroomQuizzesInfo> findClassroomQuizzesInfo(long classroomId);
 
-    Optional<ClassroomQuiz> findClassroomQuiz(long classroomId, long quizId);
+    Optional<QuizInfo> findQuizInfo(long classroomId, long quizId);
 
     boolean submitQuiz(long classroomId, QuizSubmissionPayload payload);
 }

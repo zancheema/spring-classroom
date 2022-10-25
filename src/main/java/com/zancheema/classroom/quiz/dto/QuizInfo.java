@@ -1,4 +1,4 @@
-package com.zancheema.classroom.classroom.dto;
+package com.zancheema.classroom.quiz.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Set;
 
-public record ClassroomQuiz(
+public record QuizInfo(
         long classroomId,
 
         long quizId,

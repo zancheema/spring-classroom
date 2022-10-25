@@ -2,6 +2,8 @@ package com.zancheema.classroom.classroom;
 
 import com.zancheema.classroom.classroom.dto.*;
 import com.zancheema.classroom.quiz.Quiz;
+import com.zancheema.classroom.quiz.QuizMapper;
+import com.zancheema.classroom.quiz.dto.QuizInfo;
 import com.zancheema.classroom.user.User;
 import com.zancheema.classroom.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +33,9 @@ public class ClassroomServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private QuizMapper quizMapper;
 
     @InjectMocks
     private ClassroomServiceImpl classroomService;
@@ -339,5 +344,51 @@ public class ClassroomServiceTest {
         assertThat(optionalInfo).isPresent();
         ClassroomQuizzesInfo info = optionalInfo.get();
         assertThat(info).isEqualTo(mockInfo);
+    }
+
+    @Test
+    public void findQuizInfoWhenClassroomIdDoesNotExistShouldReturnEmpty() {
+        Optional<QuizInfo> optionalQuizInfo = classroomService
+                .findQuizInfo(1, 2);
+
+        assertThat(optionalQuizInfo).isEmpty();
+    }
+
+    @Test
+    public void findQuizInfoWhenQuizIdDoesNotExistShouldReturnEmpty() {
+        long classroomId = 1;
+        long quizInfoId = 3;
+        when(classroomRepository.findById(classroomId))
+                .thenReturn(Optional.of(classroomObj));
+        Quiz quiz1 = new Quiz(2, classroomObj, null, null);
+        Quiz quiz2 = new Quiz(quizInfoId, classroomObj, null, null);
+        // do not include quiz2 in classroom quizzes
+        classroomObj.setQuizzes(Set.of(quiz1));
+
+        Optional<QuizInfo> optionalQuizInfo = classroomService
+                .findQuizInfo(classroomId, quizInfoId);
+
+        assertThat(optionalQuizInfo).isEmpty();
+    }
+
+    @Test
+    public void findQuizInfoByClassroomIdSuccessShouldReturnQuizInfoObject() {
+        long classroomId = 1;
+        long quizInfoId = 3;
+        when(classroomRepository.findById(classroomId))
+                .thenReturn(Optional.of(classroomObj));
+        Quiz quiz1 = new Quiz(2, classroomObj, null, null);
+        Quiz quiz2 = new Quiz(quizInfoId, classroomObj, null, null);
+        classroomObj.setQuizzes(Set.of(quiz1, quiz2));
+        QuizInfo quizInfo = new QuizInfo(1, 2, null, null, null, null);
+        when(quizMapper.toQuizInfo(quiz2))
+                .thenReturn(quizInfo);
+
+        Optional<QuizInfo> optionalQuizInfo = classroomService
+                .findQuizInfo(classroomId, quizInfoId);
+
+        assertThat(optionalQuizInfo)
+                .isPresent()
+                .get().isEqualTo(quizInfo);
     }
 }

@@ -2,7 +2,7 @@ package com.zancheema.classroom.classroom;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zancheema.classroom.classroom.dto.*;
-import com.zancheema.classroom.classroom.dto.ClassroomQuiz.QuizQuestion;
+import com.zancheema.classroom.quiz.dto.QuizInfo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -239,8 +239,8 @@ public class ClassroomControllerTest {
     public void getClassroomQuizzesInfoShouldReturnClassroomQuizzesObject() throws Exception {
         ClassroomQuizzesInfo classroomQuizzesInfo = new ClassroomQuizzesInfo(
                 1L, Set.of(
-                new ClassroomQuizzesInfo.QuizInfo(2L, LocalDateTime.now(), LocalDateTime.now(), LocalTime.of(9, 20)),
-                new ClassroomQuizzesInfo.QuizInfo(3L, LocalDateTime.now(), LocalDateTime.now(), LocalTime.of(9, 30))
+                new ClassroomQuizzesInfo.classroomQuizInfo(2L, LocalDateTime.now(), LocalDateTime.now(), LocalTime.of(9, 20)),
+                new ClassroomQuizzesInfo.classroomQuizInfo(3L, LocalDateTime.now(), LocalDateTime.now(), LocalTime.of(9, 30))
         ));
         String classroomQuizzesInfoJson = objectMapper.writeValueAsString(classroomQuizzesInfo);
         when(classroomService.findClassroomQuizzesInfo(1L))
@@ -259,26 +259,26 @@ public class ClassroomControllerTest {
 
     @Test
     public void getClassroomQuizShouldReturnClassroomQuizObject() throws Exception {
-        ClassroomQuiz quiz = new ClassroomQuiz(
+        QuizInfo quiz = new QuizInfo(
                 1L,
                 2L,
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(1),
                 LocalTime.of(0, 30),
                 Set.of(
-                        new QuizQuestion(1, "Q1", Set.of(
-                                new QuizQuestion.Answer(4L, 1, "A"),
-                                new QuizQuestion.Answer(5L, 2, "B"),
-                                new QuizQuestion.Answer(6L, 3, "C")
+                        new QuizInfo.QuizQuestion(1, "Q1", Set.of(
+                                new QuizInfo.QuizQuestion.Answer(4L, 1, "A"),
+                                new QuizInfo.QuizQuestion.Answer(5L, 2, "B"),
+                                new QuizInfo.QuizQuestion.Answer(6L, 3, "C")
                         )),
-                        new QuizQuestion(1, "Q2", Set.of(
-                                new QuizQuestion.Answer(8L, 1, "A"),
-                                new QuizQuestion.Answer(9L, 2, "B"),
-                                new QuizQuestion.Answer(10L, 3, "C")
+                        new QuizInfo.QuizQuestion(1, "Q2", Set.of(
+                                new QuizInfo.QuizQuestion.Answer(8L, 1, "A"),
+                                new QuizInfo.QuizQuestion.Answer(9L, 2, "B"),
+                                new QuizInfo.QuizQuestion.Answer(10L, 3, "C")
                         ))
                 )
         );
-        when(classroomService.findClassroomQuiz(quiz.classroomId(), quiz.quizId()))
+        when(classroomService.findQuizInfo(quiz.classroomId(), quiz.quizId()))
                 .thenReturn(Optional.of(quiz));
 
         String quizJson = objectMapper.writeValueAsString(quiz);
