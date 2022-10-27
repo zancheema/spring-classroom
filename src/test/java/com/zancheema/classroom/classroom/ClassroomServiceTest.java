@@ -1,9 +1,14 @@
 package com.zancheema.classroom.classroom;
 
+import com.zancheema.classroom.answer.AnswerRepository;
 import com.zancheema.classroom.classroom.dto.*;
+import com.zancheema.classroom.question.Question;
+import com.zancheema.classroom.question.QuestionRepository;
 import com.zancheema.classroom.quiz.Quiz;
 import com.zancheema.classroom.quiz.QuizMapper;
+import com.zancheema.classroom.quiz.QuizRepository;
 import com.zancheema.classroom.quiz.dto.QuizInfo;
+import com.zancheema.classroom.solution.SolutionRepository;
 import com.zancheema.classroom.user.User;
 import com.zancheema.classroom.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +41,18 @@ public class ClassroomServiceTest {
 
     @Mock
     private QuizMapper quizMapper;
+
+    @Mock
+    private QuizRepository quizRepository;
+
+    @Mock
+    private SolutionRepository solutionRepository;
+
+    @Mock
+    private QuestionRepository questionRepository;
+
+    @Mock
+    private AnswerRepository answerRepository;
 
     @InjectMocks
     private ClassroomServiceImpl classroomService;
@@ -390,5 +407,70 @@ public class ClassroomServiceTest {
         assertThat(optionalQuizInfo)
                 .isPresent()
                 .get().isEqualTo(quizInfo);
+    }
+
+    @Test
+    public void quizDoesNotExistShouldReturnFalse() {
+        boolean submitted = classroomService
+                .submitQuiz(1L, new QuizSubmissionPayload(2L, null, null));
+
+        assertThat(submitted).isFalse();
+    }
+
+    @Test
+    public void studentDoesNotExistShouldReturnFalse() {
+        long classroomId = 1L;
+        QuizSubmissionPayload payload = new QuizSubmissionPayload(2L, 3L, null);
+        when(quizRepository.findByIdAndClassroomId(payload.getQuizId(), classroomId))
+                .thenReturn(Optional.of(new Quiz()));
+
+        boolean submitted = classroomService
+                .submitQuiz(1L, new QuizSubmissionPayload(2L, null, null));
+
+        assertThat(submitted).isFalse();
+    }
+
+    @Test
+    public void anyQuestionDoesNotExistShouldReturnFalse() {
+        long classroomId = 1L;
+        Quiz quiz = new Quiz();
+        User student = new User();
+        QuizSubmissionPayload payload = new QuizSubmissionPayload(2L, 3L, Set.of(
+                new QuizSubmissionPayload.SubmittedAnswer(4L, "first"),
+                new QuizSubmissionPayload.SubmittedAnswer(5L, "second")
+        ));
+        when(quizRepository.findByIdAndClassroomId(payload.getQuizId(), classroomId))
+                .thenReturn(Optional.of(quiz));
+        when(userRepository.findById(payload.getStudentId()))
+                .thenReturn(Optional.of(student));
+
+        boolean submitted = classroomService
+                .submitQuiz(1L, payload);
+
+        assertThat(submitted).isFalse();
+    }
+
+    @Test
+    public void submitQuizSuccessShouldReturnTrue() {
+        long classroomId = 1L;
+        QuizSubmissionPayload payload = new QuizSubmissionPayload(2L, 3L, Set.of(
+                new QuizSubmissionPayload.SubmittedAnswer(4L, "first"),
+                new QuizSubmissionPayload.SubmittedAnswer(5L, "second")
+        ));
+        Quiz quiz = new Quiz();
+        when(quizRepository.findByIdAndClassroomId(payload.getQuizId(), classroomId))
+                .thenReturn(Optional.of(quiz));
+        User student = new User();
+        when(userRepository.findById(payload.getStudentId()))
+                .thenReturn(Optional.of(student));
+        when(questionRepository.findById(4L))
+                .thenReturn(Optional.of(new Question()));
+        when(questionRepository.findById(5L))
+                .thenReturn(Optional.of(new Question()));
+
+        boolean submitted = classroomService
+                .submitQuiz(1L, payload);
+
+        assertThat(submitted).isTrue();
     }
 }

@@ -1,11 +1,20 @@
 package com.zancheema.classroom.classroom;
 
+import com.zancheema.classroom.answer.Answer;
+import com.zancheema.classroom.answer.AnswerRepository;
 import com.zancheema.classroom.classroom.dto.*;
+import com.zancheema.classroom.question.Question;
+import com.zancheema.classroom.question.QuestionRepository;
+import com.zancheema.classroom.quiz.Quiz;
 import com.zancheema.classroom.quiz.QuizMapper;
+import com.zancheema.classroom.quiz.QuizRepository;
 import com.zancheema.classroom.quiz.dto.QuizInfo;
+import com.zancheema.classroom.solution.Solution;
+import com.zancheema.classroom.solution.SolutionRepository;
 import com.zancheema.classroom.user.User;
 import com.zancheema.classroom.user.UserRepository;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,12 +24,20 @@ public class ClassroomServiceImpl implements ClassroomService {
     private final ClassroomMapper classroomMapper;
     private final UserRepository userRepository;
     private final QuizMapper quizMapper;
+    private final QuizRepository quizRepository;
+    private final SolutionRepository solutionRepository;
+    private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
 
-    public ClassroomServiceImpl(ClassroomRepository classroomRepository, ClassroomMapper classroomMapper, UserRepository userRepository, QuizMapper quizMapper) {
+    public ClassroomServiceImpl(ClassroomRepository classroomRepository, ClassroomMapper classroomMapper, UserRepository userRepository, QuizMapper quizMapper, QuizRepository quizRepository, SolutionRepository solutionRepository, QuestionRepository questionRepository, AnswerRepository answerRepository) {
         this.classroomRepository = classroomRepository;
         this.classroomMapper = classroomMapper;
         this.userRepository = userRepository;
         this.quizMapper = quizMapper;
+        this.quizRepository = quizRepository;
+        this.solutionRepository = solutionRepository;
+        this.questionRepository = questionRepository;
+        this.answerRepository = answerRepository;
     }
 
     @Override
@@ -129,8 +146,23 @@ public class ClassroomServiceImpl implements ClassroomService {
                 .findFirst();
     }
 
+    @Transactional
     @Override
     public boolean submitQuiz(long classroomId, QuizSubmissionPayload payload) {
-        return false;
+        Optional<Quiz> optionalQuiz = quizRepository
+                .findByIdAndClassroomId(payload.getQuizId(), classroomId);
+        Optional<User> optionalStudent = userRepository.findById(payload.getStudentId());
+        if (optionalQuiz.isEmpty() || optionalStudent.isEmpty()) return false;
+
+
+        Solution solution = new Solution(optionalQuiz.get(), optionalStudent.get());
+        solution = solutionRepository.save(solution);
+        for (var submittedAnswer : payload.getAnswers()) {
+            Optional<Question> optionalQuestion = questionRepository.findById(submittedAnswer.getQuestionId());
+            if (optionalQuestion.isEmpty()) return false;
+            Answer answer = new Answer(optionalQuestion.get(), solution, submittedAnswer.getValue());
+            answerRepository.save(answer);
+        }
+        return true;
     }
 }

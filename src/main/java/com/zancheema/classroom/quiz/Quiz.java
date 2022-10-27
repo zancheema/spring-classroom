@@ -27,11 +27,15 @@ public class Quiz {
     public Quiz() {
     }
 
-    public Quiz(long id, Classroom classroom, LocalDateTime deadline, LocalTime duration) {
-        this.id = id;
+    public Quiz(Classroom classroom, LocalDateTime deadline, LocalTime duration) {
         this.classroom = classroom;
         this.deadline = deadline;
         this.duration = duration;
+    }
+
+    public Quiz(long id, Classroom classroom, LocalDateTime deadline, LocalTime duration) {
+        this(classroom, deadline, duration);
+        this.id = id;
     }
 
     public long getId() {
