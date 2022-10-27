@@ -292,9 +292,10 @@ public class ClassroomControllerTest {
         long classroomId = 1;
         QuizSubmissionPayload payload = new QuizSubmissionPayload(
                 1L,
+                3L,
                 Set.of(
-                        new QuizSubmissionPayload.SubmittedAnswer(2L, 3L),
-                        new QuizSubmissionPayload.SubmittedAnswer(4L, 5L)
+                        new QuizSubmissionPayload.SubmittedAnswer(2L, "first"),
+                        new QuizSubmissionPayload.SubmittedAnswer(4L, "second")
                 )
         );
         String payloadJson = objectMapper.writeValueAsString(payload);
@@ -315,9 +316,10 @@ public class ClassroomControllerTest {
         long classroomId = 1;
         QuizSubmissionPayload payload = new QuizSubmissionPayload(
                 1L,
+                3L,
                 Set.of(
-                        new QuizSubmissionPayload.SubmittedAnswer(2L, 3L),
-                        new QuizSubmissionPayload.SubmittedAnswer(4L, 5L)
+                        new QuizSubmissionPayload.SubmittedAnswer(2L, "first"),
+                        new QuizSubmissionPayload.SubmittedAnswer(4L, "second")
                 )
         );
         String payloadJson = objectMapper.writeValueAsString(payload);

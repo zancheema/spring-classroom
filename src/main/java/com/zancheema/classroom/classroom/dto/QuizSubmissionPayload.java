@@ -13,6 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class QuizSubmissionPayload {
     private @NotNull Long quizId;
+    private @NotNull Long studentId;
     private @NotEmpty Set<SubmittedAnswer> answers;
 
     @Data
@@ -20,6 +21,6 @@ public class QuizSubmissionPayload {
     @AllArgsConstructor
     public static class SubmittedAnswer {
         private @NotNull long questionId;
-        private @NotNull long answerId;
+        private @NotNull String value;
     }
 }
